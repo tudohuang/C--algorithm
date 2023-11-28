@@ -1,20 +1,48 @@
 #include <iostream>
+#include <list>
 #include <vector>
 
-std::vector<int> prefixSum(const std::vector<int>& nums) {
-    std::vector<int> prefix(nums.size());
-    prefix[0] = nums[0];
-    for (size_t i = 1; i < nums.size(); ++i) {
-        prefix[i] = prefix[i - 1] + nums[i];
+class Graph {
+    int numVertices;
+    std::list<int> *adjLists;
+    void DFSUtil(int v, std::vector<bool>& visited);
+
+public:
+    Graph(int vertices);
+    void addEdge(int src, int dest);
+    void DFS(int startVertex);
+};
+
+Graph::Graph(int vertices) {
+    numVertices = vertices;
+    adjLists = new std::list<int>[vertices];
+}
+
+void Graph::addEdge(int src, int dest) {
+    adjLists[src].push_back(dest);
+}
+
+void Graph::DFSUtil(int v, std::vector<bool>& visited) {
+    visited[v] = true;
+    std::cout << v << " ";
+    for (int i : adjLists[v]) {
+        if (!visited[i])
+            DFSUtil(i, visited);
     }
-    return prefix;
+}
+
+void Graph::DFS(int startVertex) {
+    std::vector<bool> visited(numVertices, false);
+    DFSUtil(startVertex, visited);
 }
 
 int main() {
-    std::vector<int> nums = {10, 20, 10, 5, 15};
-    std::vector<int> prefix = prefixSum(nums);
-    for (int sum : prefix) {
-        std::cout << sum << " ";
-    }
+    Graph g(4);
+    g.addEdge(0, 1);
+    g.addEdge(0, 2);
+    g.addEdge(1, 2);
+    g.addEdge(2, 3);
+
+    g.DFS(0);
     return 0;
 }
